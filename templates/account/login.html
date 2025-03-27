@@ -1,0 +1,60 @@
+{% load static %}
+
+{% load i18n %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Sign In" %}</title>
+    
+    <!-- Font Awesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/user/repo/styles.css">
+    <link rel="stylesheet" href="{% static 'base/css/login.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <form id="loginForm" class="login-form" method="POST" action="{% url 'account_login' %}">
+            {% csrf_token %}
+            <h2>{% trans "Sign In" %}</h2>
+            
+            <div class="input-group">
+                <label for="email">{% trans "Email Address" %}</label>
+                <input type="email" id="email" name="login" required>
+                <span class="error-message" id="emailError"></span>
+            </div>
+
+            <div class="input-group">
+                <label for="password">{% trans "Password" %}</label>
+                <input type="password" id="password" name="password" required>
+                <span class="error-message" id="passwordError"></span>
+            </div>
+
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <div class="actions">
+                <button type="submit">{% trans "Login" %}</button>
+                <a href="{% url 'account_reset_password' %}" class="forgot-password">{% trans "Forgot Password?" %}</a>
+            </div>
+
+            {% get_providers as socialaccount_providers %}
+            {% if socialaccount_providers %}
+            <div class="social-login">
+                <p>{% trans "Or sign in with:" %}</p>
+                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+            </div>
+            {% endif %}
+
+            <p class="signup-link">{% trans "Don't have an account?" %} <a href="{% url 'account_signup' %}">{% trans "Sign up" %}</a></p>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/user/repo/scripts.js"></script>
+</body>
+</html>

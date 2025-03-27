@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowPay - Digital Payment System</title>
+    <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/small/64/000000/money-bag.png"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        .card {
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #000;
+        }
+        .transaction-item:hover { background-color: #f8f8f8; }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-container {
+            background: #fff;
+            color: #000;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #000;
+        }
+    </style>
+</head>
+<body class="bg-white flex flex-col min-h-screen">
+
+<header class="bg-white text-black py-4 border-b">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <img class="h-8 mr-2" src="https://img.icons8.com/small/64/000000/money-bag.png" alt="FlowPay Logo">
+                <span class="text-xl font-bold">FlowPay</span>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="{% url 'dashboard:user_dashboard' %}" class="hover:text-gray-600">Dashboard</a>
+                <a href="#" id="transactions-link" class="hover:text-gray-600">Transactions</a>
+                <a href="#" class="hover:text-gray-600">Profile</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button id="profile-dropdown" class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100">
+                        <img class="h-8 w-8 rounded-full" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+                        <img class="w-4 h-4" src="https://img.icons8.com/small/24/000000/expand-arrow.png" alt="Dropdown Arrow">
+                    </button>
+                    <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                        <ul class="py-2">
+                            <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Profile</a></li>
+                            <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Settings</a></li>
+                            <li><a href="{% url 'logout' %}" class="block px-4 py-2 text-black hover:bg-gray-100">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow container mx-auto px-4 py-8">
+    {% block content %}
+
+
+    {% endblock %}
+
+</main>
+
+<script>
+    $(document).ready(function() {
+        // Profile Dropdown
+        $('#profile-dropdown').click(function(e) {
+            e.stopPropagation();
+            $('#dropdown-menu').toggleClass('hidden');
+        });
+
+        $(document).click(function() {
+            $('#dropdown-menu').addClass('hidden');
+        });
+
+        // Send Money Form Toggle
+        $('#send-money-btn').click(function() {
+            $('#send-money-form').toggleClass('hidden');
+        });
+
+        // Transactions Link Click
+        $('#transactions-link').click(function(e) {
+            e.preventDefault();
+            $('#main-content').html(`
+                <div class="card">
+                    <h2 class="text-lg font-semibold mb-4">All Transactions</h2>
+                    <div class="space-y-4">
+                        <div class="transaction-item p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+                                    <div>
+                                        <div class="font-semibold">Payment to Brian Kamau</div>
+                                        <div class="text-sm text-gray-600">March 15, 2023</div>
+                                    </div>
+                                </div>
+                                <div class="font-semibold">-$250.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+
+        // Modal Handling
+        $('#add-funds-btn').click(() => $('#add-funds-modal').removeClass('hidden'));
+        $('#withdraw-funds-btn').click(() => $('#withdraw-funds-modal').removeClass('hidden'));
+        $('.close-modal').click(() => $('.modal-overlay').addClass('hidden'));
+    });
+</script>
+
+</body>
+</html>

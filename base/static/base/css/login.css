@@ -1,0 +1,201 @@
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Container */
+.login-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: 0.3s ease-in-out;
+}
+
+/* Form Title */
+h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* Input Fields */
+.input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.input-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Error Messages */
+.error-message {
+    color: red;
+    font-size: 14px;
+    display: none;
+}
+
+/* Primary Button */
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #004099);
+}
+
+/* Forgot Password Link */
+.forgot-password {
+    display: block;
+    margin-top: 12px;
+    font-size: 15px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Social Login */
+.social-login {
+    margin-top: 20px;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn i {
+    font-size: 20px;
+    margin-right: 12px;
+}
+
+/* Google Button */
+.google {
+    background: linear-gradient(135deg, #4237db, #1d36c1);
+    color: white;
+}
+
+.google:hover {
+    background: linear-gradient(135deg, #480999, #480999);
+}
+
+/* GitHub Button */
+.github {
+    background: linear-gradient(135deg, #333, #111);
+    color: white;
+}
+
+.github:hover {
+    background: linear-gradient(135deg, #111, #000);
+}
+
+/* Sign-up Link */
+.signup-link {
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 1.5rem;
+        max-width: 350px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1.2rem;
+        max-width: 320px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .input-group input {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 10px;
+    }
+}
+/* signup.css */

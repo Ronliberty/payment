@@ -1,0 +1,646 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+/* Light Theme (Default) */
+:root {
+    --bg-color: #f5f5f5;
+    --text-color: #222;
+    --navbar-bg: #ffffff;
+    --navbar-shadow: rgba(0, 0, 0, 0.1);
+    --search-bg: #eaeaea;
+    --dropdown-bg: white;
+    --dropdown-hover: #f0f0f0;
+    --icon-color: #555;
+}
+
+/* Dark Theme */
+.dark-mode {
+    --bg-color: #1e1e2f;
+    --text-color: #ffffff;
+    --navbar-bg: #2a2a3c;
+    --navbar-shadow: rgba(0, 0, 0, 0.4);
+    --search-bg: #2e2e40;
+    --dropdown-bg: #2a2a3c;
+    --dropdown-hover: #3a3a50;
+    --icon-color: #ffcc00;
+}
+
+/* Apply Theme Colors */
+body {
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s, color 0.3s;
+}
+
+.navbar {
+    background: var(--navbar-bg);
+    box-shadow: 0px 4px 10px var(--navbar-shadow);
+    transition: 0.3s ease-in-out;
+}
+
+.search-bar {
+    background: var(--search-bg);
+    color: var(--text-color);
+}
+
+.search-bar::placeholder {
+    color: var(--icon-color);
+}
+
+.notifications i {
+    color: var(--icon-color);
+}
+
+.profile-dropdown {
+    position: relative;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    background: var(--dropdown-bg);
+    color: var(--text-color);
+}
+
+.dropdown-menu li:hover {
+    background: var(--dropdown-hover);
+}
+
+/* Theme Toggle */
+#theme-toggle {
+    cursor: pointer;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+#theme-toggle:hover {
+    background: var(--dropdown-hover);
+}
+
+.sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, #1e1e2f, #2a2a3c);
+    color: white;
+    padding: 12px 25px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Left Section (Logo & Sidebar Toggle) */
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+#menu-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-right: 15px;
+}
+
+#menu-toggle:hover {
+    color: #ffcc00;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.logo:hover {
+    color: #ffcc00;
+}
+
+/* Center Section (Search Bar) */
+.navbar-center {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-bar {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    width: 300px;
+    outline: none;
+    font-size: 14px;
+    transition: 0.3s;
+    background: #2e2e40;
+    color: white;
+}
+
+.search-bar::placeholder {
+    color: #b0b0b0;
+}
+
+.search-bar:focus {
+    background: #3a3a50;
+    width: 320px;
+}
+
+.search-btn {
+    background: #ffcc00;
+    border: none;
+    color: #1e1e2f;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: 0.3s ease-in-out;
+}
+
+.search-btn:hover {
+    background: #e6b800;
+}
+
+/* Right Section (Notifications & Profile) */
+.navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Notifications */
+.notifications {
+    position: relative;
+    color: white;
+    font-size: 18px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.notifications:hover {
+    color: #ffcc00;
+}
+
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+/* Notification Pulse Effect */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+}
+
+/* Profile Dropdown */
+.profile-dropdown {
+    position: relative;
+    cursor: pointer;
+}
+
+.profile-img {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.profile-img:hover {
+    transform: scale(1.1);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #2a2a3c;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    display: none;
+    width: 170px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease-in-out;
+}
+
+.dropdown-menu.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-menu li {
+    list-style: none;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+}
+
+.dropdown-menu li a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.dropdown-menu li:hover {
+    background: #3a3a50;
+}
+
+/* Mobile Navbar Adjustments */
+@media (max-width: 768px) {
+    /* Remove Sidebar Toggle Button */
+    #menu-toggle {
+        display: none;
+    }
+
+    /* Adjust Navbar Padding for Mobile */
+    .navbar {
+        padding: 10px 15px;
+        justify-content: space-between;
+    }
+
+    /* Center Logo on Mobile */
+    .navbar-left {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    /* Search Bar Adjustments for Mobile */
+    .navbar-center {
+        width: 100%;
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+    .search-bar {
+        width: 90%;
+        max-width: 300px;
+        font-size: 13px;
+    }
+
+    .search-btn {
+        padding: 7px 10px;
+    }
+
+    /* Notifications & Profile Dropdown */
+    .navbar-right {
+        gap: 15px;
+    }
+
+    .notifications i {
+        font-size: 16px;
+    }
+
+    .profile-img {
+        width: 35px;
+        height: 35px;
+    }
+
+    /* Mobile Dropdown Adjustments */
+    .dropdown-menu {
+        width: 150px;
+        right: -10px;
+    }
+
+    .dropdown-menu li {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* Mobile Footer Navbar (Appears on Small Screens) */
+@media (max-width: 768px) {
+    .footer-navbar {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: var(--footer-bg);
+        padding: 10px 0;
+        box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-navbar ul {
+        display: flex;
+        justify-content: space-around;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .footer-navbar ul li {
+        flex: 1;
+        text-align: center;
+    }
+
+    .footer-navbar ul li a {
+        text-decoration: none;
+        color: var(--text-color);
+        font-size: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 6px 0;
+        transition: 0.3s;
+    }
+
+    .footer-navbar ul li a i {
+        font-size: 18px;
+    }
+
+    /* Footer Theme Matching */
+    :root {
+        --footer-bg: #ffffff;
+    }
+
+    .dark-mode {
+        --footer-bg: #2a2a3c;
+    }
+}
+/* Default Search Bar for Small Screens */
+@media (max-width: 768px) {
+    .search-bar {
+        width: 80%;
+        max-width: 250px;
+        font-size: 14px;
+    }
+
+    /* Hide Default Search Bar Text Input on Mobile */
+    .search-bar:focus {
+        width: 80%;
+    }
+
+    /* Fullscreen Search Overlay (Only for Mobile) */
+    .search-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        transition: opacity 0.3s ease-in-out;
+    }
+
+    /* Overlay Content */
+    .search-overlay-content {
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 10px 15px;
+        border-radius: 30px;
+        position: relative;
+    }
+
+    .search-overlay input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        padding: 10px;
+        border-radius: 30px;
+        background: #f5f5f5;
+    }
+
+    /* Close Search Button */
+    .close-search {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #222;
+        margin-left: 10px;
+    }
+
+    /* Show Overlay When Active */
+    .search-overlay.active {
+        display: flex;
+        opacity: 1;
+    }
+}
+
+/* Keep Regular Search Bar Behavior on Large Screens */
+@media (min-width: 769px) {
+    .search-overlay {
+        display: none !important;
+    }
+}
+/* Search Results (Desktop) - Below Search Bar */
+.search-results {
+    position: absolute;
+    top: 100%; /* Push results below the search bar */
+    left: 0;
+    width: 100%;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Search Results (Mobile Overlay) - Below Search Input */
+@media (max-width: 768px) {
+    .overlay-results {
+        position: absolute;
+        top: calc(100% + 10px); /* Place results directly below input */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        display: none;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 1000;
+        padding: 10px;
+    }
+}
+
+/* Result Items */
+.search-results div,
+.overlay-results div {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.search-results div:last-child,
+.overlay-results div:last-child {
+    border-bottom: none;
+}
+
+.search-results div:hover,
+.overlay-results div:hover {
+    background: #f5f5f5;
+}
+
+
+
+/* Sidebar Default Styles */
+.sidebar {
+    width: 250px;
+    background: var(--sidebar-bg);
+    position: fixed;
+    top: 60px; /* Below Navbar */
+    left: 0;
+    height: calc(100vh - 60px);
+    padding-top: 20px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 12px 20px;
+    transition: 0.3s;
+}
+
+.sidebar-menu li a {
+    text-decoration: none;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+}
+
+.sidebar-menu li:hover {
+    background: var(--sidebar-hover);
+}
+
+/* Light Mode Sidebar */
+:root {
+    --sidebar-bg: #ffffff;
+    --sidebar-hover: #f0f0f0;
+}
+
+/* Dark Mode Sidebar */
+.dark-mode {
+    --sidebar-bg: #2a2a3c;
+    --sidebar-hover: #3a3a50;
+}
+/* Footer Navbar - Mobile Only */
+.footer-navbar {
+    display: none; /* Hidden by default */
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: var(--footer-bg);
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+    transition: 0.3s;
+}
+
+/* Footer Menu */
+.footer-navbar ul {
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.footer-navbar ul li {
+    flex: 1;
+    text-align: center;
+}
+
+.footer-navbar ul li a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 0;
+    transition: 0.3s;
+}
+
+.footer-navbar ul li a i {
+    font-size: 20px;
+}
+
+/* Hover Effect */
+.footer-navbar ul li a:hover {
+    color: var(--icon-color);
+}
+
+/* Light Mode Footer */
+:root {
+    --footer-bg: #ffffff;
+}
+
+/* Dark Mode Footer */
+.dark-mode {
+    --footer-bg: #2a2a3c;
+}
+@media (max-width: 768px) {
+    .sidebar {
+        display: none; /* Hide Sidebar */
+    }
+    .footer-navbar {
+        display: block; /* Show Footer Navbar */
+    }
+}

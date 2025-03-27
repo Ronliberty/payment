@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bms_Bmp</title>
+    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    {% block extra_css %}{% endblock %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+   <header class="header">
+    <div class="left-section">
+        <div class="hamburger-menu">
+            <i class='bx bx-menu'></i>
+        </div>
+
+    </div>
+
+
+            <div class="right-section" style=" text-decoration: none; color: #000000;">
+            <div class="icon-settings" style=" text-decoration: none; color: #000000;">
+
+                    <a href="" class="user" style=" text-decoration: none; color: #000000;">
+                        <i class='bx bx-user' ></i>
+                    </a>
+
+                    <a href="" class="chart" style=" text-decoration: none; color: #000000">
+                        <i class='bx bxs-comment-dots'>
+
+                    </i></a>
+                    <a href="" class="home-link" style=" text-decoration: none; color: #000000"><i class='bx bx-bell'></i></a>
+
+
+
+                   <a href="" class="settings" style=" text-decoration: none; color: #000000">
+                    <i class="bx bx-cog"></i>
+                </a>
+
+            </div>
+
+
+    </div>
+    <nav class="sidebar">
+        <div class="nav-li">
+            <nav>
+
+                <li class="li"><a href="">All Transactions</a></li>
+                <li class="li"><a href="">History</a></li>
+
+            </nav>
+        </div>
+
+
+        <div class="dropdown">
+            <div class="dropdown-header">
+                <a href="#" class="dropdown-toggle">
+                    <span>Main Menu</span>
+                    <i class='bx bx-chevron-down'></i>
+                </a>
+            </div>
+            <div class="dropdown-content">
+                <div class="sidebar-link">
+                    <a href="" class="home-link" style="color: black;"><i class='bx bx-home'></i></a>
+                    <div><a href="" class="home-link" style="color: black;">Home</a></div>
+                </div>
+                <div class="sidebar-link">
+                    <a href="" class="home-link" style="color: black;"><i class='bx bxs-user'></i></a>
+                    <div><a href="" class="home-link" style="color: black;">Users</a></div>
+                </div>
+
+                <div class="sidebar-link">
+                    <a href="" class="home-link" style="color:black;"><i class='bx bx-history'></i></a>
+                    <div><a href="" class="home-link" style="color: black;">History</a></div>
+                </div>
+
+                <div class="sidebar-link">
+                    <a href="{% url 'logout' %}" class="home-link" style="color: black;"><i class='bx bx-help-circle'></i></a>
+                    <div><a href="{% url 'logout' %}" class="home-link" style="color: black;">logout</a></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+
+
+
+   </header>
+   <main>
+       <section class="container">
+       {% block content %}
+       {% endblock %}
+       </section>
+</main>
+   <footer class="footerbar">
+    <div >
+        <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-home' ></i></a>
+
+            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bxs-user' ></i></a>
+
+            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-male-female'></i></a>
+
+            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-history'></i></a>
+
+
+
+
+    </div>
+   </footer>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("menu-toggle");
+    const menu = document.querySelector(".sidebar"); // Targets the sidebar
+
+    menuToggle.addEventListener("click", function () {
+        menu.classList.toggle("active"); // Toggles visibility
+    });
+});
+</script>
+
+
+
+
+<!--   <script src="{% static 'dashboard/js/dashboard.js' %}"></script>-->
+</body>
+</html>
