@@ -1,15 +1,18 @@
 from django import forms
 
 class DepositForm(forms.Form):
-    amount = forms.DecimalField(max_digits=12, decimal_places=2, label="Amount")
+    amount = forms.DecimalField(max_digits=12, decimal_places=2, min_value=1.00)
+    phone_number = forms.CharField(max_length=20, help_text="Enter Mpesa number for deposit")
 
-class SendMoneyForm(forms.Form):
-    recipient = forms.CharField(max_length=150, label="Recipient Username")
-    amount = forms.DecimalField(max_digits=12, decimal_places=2, label="Amount")
+class WithdrawForm(forms.Form):
+    amount = forms.DecimalField(max_digits=12, decimal_places=2)
+    mpesa_number = forms.CharField(max_length=20, help_text="Enter Mpesa number for withdrawal")
 
-class WithdrawalForm(forms.Form):
-    amount = forms.DecimalField(max_digits=12, decimal_places=2, min_value=0.01)
-    number = forms.CharField(max_length=20, help_text="Enter phone or account number")
+class SendForm(forms.Form):
+    recipient_email = forms.EmailField(help_text="Enter Email")
+    amount = forms.DecimalField(max_digits=12, decimal_places=2)
 
-class OTPForm(forms.Form):
-    otp = forms.CharField(max_length=6, label="Enter OTP")
+
+class PaymentRequestForm(forms.Form):
+    merchant_email = forms.EmailField(help_text="Enter Email")
+    amount = forms.DecimalField(max_digits=12, decimal_places=2)

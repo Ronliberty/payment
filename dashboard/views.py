@@ -14,9 +14,9 @@ class BaseDashboardView(LoginRequiredMixin, TemplateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class ManagerDashboard(BaseDashboardView):
+class MerchantDashboard(BaseDashboardView):
     template_name = 'dashboard/manger_dash.html'
-    group_name = 'manager'
+    group_name = 'merchants'
 
 class UserDashboardView(BaseDashboardView):
     template_name = 'dashboard/user_dash.html'
