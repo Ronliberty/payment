@@ -66,8 +66,13 @@
             </div>
             <nav class="hidden md:flex items-center space-x-6">
                 <a href="{% url 'dashboard:user_dashboard' %}" class="hover:text-gray-600">Dashboard</a>
-                <a href="#" id="transactions-link" class="hover:text-gray-600">Transactions</a>
-                <a href="#" class="hover:text-gray-600">Profile</a>
+                <a href="" id="transactions-link" class="hover:text-gray-600">Transactions</a>
+                <a href="{% url 'payment:pay_merchant' %}"  class="hover:text-gray-600">Pay</a>
+                <a href="{% url 'payment:deposit' %}" class="hover:text-gray-600">deposit</a>
+                <a href="{% url 'payment:withdraw' %}"  class="hover:text-gray-600">withdraw</a>
+                <a href="{% url 'payment:send_money' %}" class="hover:text-gray-600">send_money</a>
+                <a href="{% url 'payment:verify_otp' %}" class="hover:text-gray-600">Transactions</a>
+
             </nav>
             <div class="flex items-center space-x-4">
                 <div class="relative">
@@ -88,7 +93,7 @@
     </div>
 </header>
 
-<main class="flex-grow container mx-auto px-4 py-8">
+<main >
     {% block content %}
 
 

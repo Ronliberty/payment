@@ -1,145 +1,233 @@
-{% extends 'dashboard/base.html' %}
 {% load static %}
-{% block content %}
- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlowPay - Digital Payment System</title>
+  <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/small/64/000000/money-bag.png"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .card {
+      background-color: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #000;
+    }
+    .transaction-item:hover { background-color: #f8f8f8; }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-container {
+      background: #fff;
+      color: #000;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #000;
+    }
+  </style>
+</head>
+<body class="bg-white flex flex-col min-h-screen">
+  <!-- Header -->
+  <header class="bg-white text-black py-4 border-b">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <img class="h-8 mr-2" src="https://img.icons8.com/small/64/000000/money-bag.png" alt="FlowPay Logo">
+          <span class="text-xl font-bold">FlowPay</span>
+        </div>
+        <nav class="hidden md:flex items-center space-x-6">
+          <a href="{% url 'dashboard:user_dashboard' %}" class="hover:text-gray-600">Dashboard</a>
+          <a href="#" id="transactions-link" class="hover:text-gray-600">Transactions</a>
+          <a href="#" id="pay-merchant-btn" class="hover:text-gray-600">Pay</a>
+          <a href="{% url 'payment:deposit' %}" class="hover:text-gray-600">Deposit</a>
+          <a href="{% url 'payment:withdraw' %}" class="hover:text-gray-600">Withdraw</a>
+          <a href="{% url 'payment:send_money' %}" class="hover:text-gray-600">Send Money</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <button id="profile-dropdown" class="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100">
+              <img class="h-8 w-8 rounded-full" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+              <img class="w-4 h-4" src="https://img.icons8.com/small/24/000000/expand-arrow.png" alt="Dropdown Arrow">
+            </button>
+            <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+              <ul class="py-2">
+                <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Profile</a></li>
+                <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Settings</a></li>
+                <li><a href="{% url 'logout' %}" class="block px-4 py-2 text-black hover:bg-gray-100">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}
+    <div class="flex-grow container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Wallet Card -->
         <div class="col-span-1">
-            <div class="card">
-                <h2 class="text-lg font-semibold mb-4">Account Balance</h2>
-                <div class="text-3xl font-bold text-black"> {{ wallet.currency }}{{ wallet.balance|floatformat:2 }}</div>
-                <div class="mt-4">
-                    <button id="add-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Add Funds</button>
-                    <button id="withdraw-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 ml-2">Withdraw</button>
-                </div>
+          <div class="card">
+            <h2 class="text-lg font-semibold mb-4">Account Balance</h2>
+            <div class="text-3xl font-bold text-black">{{ wallet.currency }}{{ wallet.balance|floatformat:2 }}</div>
+            <div class="mt-4">
+              <button id="add-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Add Funds</button>
+              <button id="withdraw-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 ml-2">Withdraw</button>
             </div>
+          </div>
         </div>
-
+        <!-- Transactions and Send Money Card -->
         <div class="col-span-2" id="main-content">
-            <div class="card">
-              <h2 class="text-lg font-semibold mb-4">Recent Transactions</h2>
-        <div class="space-y-4">
-
-            {% for tx in transactions %}
-            <div class="transaction-item p-4 rounded-lg bg-gray-100">
+          <div class="card" id="transaction-list">
+            <h2 class="text-lg font-semibold mb-4">Recent Transactions</h2>
+            <div class="space-y-4">
+              {% for tx in transactions %}
+              <div class="transaction-item p-4 rounded-lg bg-gray-100">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
-                        <div>
-                            <div class="font-semibold">{{ tx.transaction_type|capfirst }} {% if tx.receiver %}to {{ tx.receiver.get_full_name|default:tx.receiver.username }}{% endif %}</div>
-                            <div class="text-sm text-gray-600">{{ tx.timestamp|date:"F d, Y" }}</div>
-                        </div>
+                  <div class="flex items-center">
+                    <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+                    <div>
+                      <div class="font-semibold">{{ tx.transaction_type|capfirst }} {% if tx.receiver %}to {{ tx.receiver.get_full_name|default:tx.receiver.username }}{% endif %}</div>
+                      <div class="text-sm text-gray-600">{{ tx.timestamp|date:"F d, Y" }}</div>
                     </div>
-                    <div class="font-semibold {% if tx.transaction_type == 'withdrawal' or tx.transaction_type == 'transfer' %}text-red-500{% else %}text-green-500{% endif %}">
-                        {% if tx.transaction_type == 'withdrawal' or tx.transaction_type == 'transfer' %}-{% else %}+{% endif %}
-                        {{ tx.amount|floatformat:2 }}
-                    </div>
+                  </div>
+                  <div class="font-semibold {% if tx.transaction_type == 'withdrawal' or tx.transaction_type == 'transfer' %}text-red-500{% else %}text-green-500{% endif %}">
+                    {% if tx.transaction_type == 'withdrawal' or tx.transaction_type == 'transfer' %}-{% else %}+{% endif %}
+                    {{ tx.amount|floatformat:2 }}
+                  </div>
                 </div>
-            </div>
-            {% empty %}
+              </div>
+              {% empty %}
                 <p>No recent transactions.</p>
-            {% endfor %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="mt-8">
+            <button id="send-money-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send Money</button>
+            <div id="send-money-form" class="hidden card mt-4 p-4 w-full max-w-sm">
 
+            </div>
+          </div>
         </div>
-
-
-
-
-    <div class="mt-8">
-        <button id="send-money-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send Money</button>
-        <div id="send-money-form" class="hidden card mt-4 p-4 w-full max-w-sm">
-            <h2 class="text-lg font-semibold mb-4">Send Money</h2>
-            <form class="space-y-3" hx-post="/send-money" hx-target="#transaction-list" hx-swap="innerHTML">
-                <div>
-                    <label class="block text-sm font-medium text-black">Recipient Email</label>
-                    <input type="email" name="email" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter email">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-black">Amount</label>
-                    <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount">
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send</button>
-                </div>
-            </form>
-        </div>
+      </div>
     </div>
-<footer class="bg-white text-black py-6 mt-8 border-t">
+    {% endblock %}
+  </main>
+
+  <!-- Deposit Modal -->
+  <div id="add-funds-modal" class="hidden modal-overlay">
+    <div class="modal-container">
+      <button class="close-modal">&times;</button>
+
+    </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div id="withdraw-funds-modal" class="hidden modal-overlay">
+    <div class="modal-container">
+      <button class="close-modal">&times;</button>
+
+    </div>
+  </div>
+
+  <!-- Pay Merchant Modal -->
+  <div id="pay-merchant-modal" class="hidden modal-overlay">
+    <div class="modal-container">
+      <button class="close-modal">&times;</button>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white text-black py-6 mt-8 border-t">
     <div class="container mx-auto px-4 text-center">
-        <p>&copy; 2023 FlowPay. All rights reserved.</p>
-        <div class="mt-2">
-            <a href="#" class="text-sm hover:underline text-black">Privacy Policy</a> |
-            <a href="#" class="text-sm hover:underline text-black">Terms of Service</a>
-        </div>
+      <p>&copy; 2023 FlowPay. All rights reserved.</p>
+      <div class="mt-2">
+        <a href="#" class="text-sm hover:underline text-black">Privacy Policy</a> |
+        <a href="#" class="text-sm hover:underline text-black">Terms of Service</a>
+      </div>
     </div>
-</footer>
+  </footer>
 
-<!-- Modals -->
-<div id="add-funds-modal" class="hidden modal-overlay">
-    <div class="modal-container">
-        <button class="close-modal">&times;</button>
-        <h2 class="text-lg font-semibold mb-4">Add Funds</h2>
-        <form method="post" action="{% url 'payment:deposit' %}" class="space-y-3">
-            {% csrf_token %}
+  <script>
+    $(document).ready(function() {
+      // Profile Dropdown
+      $('#profile-dropdown').click(function(e) {
+        e.stopPropagation();
+        $('#dropdown-menu').toggleClass('hidden');
+      });
+      $(document).click(function() {
+        $('#dropdown-menu').addClass('hidden');
+      });
 
-            {% if form.non_field_errors %}
-                <div class="mb-4 p-4 bg-red-50 text-red-700 rounded">
-                    {{ form.non_field_errors }}
+      // Toggle Send Money Form
+      $('#send-money-btn').click(function() {
+        $('#send-money-form').toggleClass('hidden');
+      });
+
+      // Toggle modals
+      $('#add-funds-btn').click(() => $('#add-funds-modal').removeClass('hidden'));
+      $('#withdraw-funds-btn').click(() => $('#withdraw-funds-modal').removeClass('hidden'));
+      $('#pay-merchant-btn').click(() => $('#pay-merchant-modal').removeClass('hidden'));
+
+      // Close modals
+      $('.close-modal').click(() => $('.modal-overlay').addClass('hidden'));
+
+      // Transactions link demo (optional)
+      $('#transactions-link').click(function(e) {
+        e.preventDefault();
+        $('#main-content').html(`
+          <div class="card">
+            <h2 class="text-lg font-semibold mb-4">All Transactions</h2>
+            <div class="space-y-4">
+              <div class="transaction-item p-4 rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+                    <div>
+                      <div class="font-semibold">Payment to Brian Kamau</div>
+                      <div class="text-sm text-gray-600">March 15, 2023</div>
+                    </div>
+                  </div>
+                  <div class="font-semibold">-$250.00</div>
                 </div>
-            {% endif %}
-
-            <div>
-                <label class="block text-sm font-medium text-black">Amount</label>
-                <input
-                    type="number"
-                    name="amount"
-                    class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                    placeholder="Enter amount"
-                    required
-                    id="id_amount"
-                    value="{{ form.amount.value|default:'' }}"
-                >
-                {% for error in form.amount.errors %}
-                    <p class="text-red-500 text-xs mt-1">{{ error }}</p>
-                {% endfor %}
+              </div>
             </div>
-            <div>
-                <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">
-                    Add Funds
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-<div id="withdraw-funds-modal" class="hidden modal-overlay">
-    <div class="modal-container">
-        <button class="close-modal">&times;</button>
-        <h2 class="text-lg font-semibold mb-4">Withdraw Funds</h2>
-        <form method="post" action="{% url 'payment:withdraw' %}" class="space-y-3">
-            {% csrf_token %}
-            <div>
-                <label class="block text-sm font-medium text-black">Amount</label>
-                <input
-                    type="number"
-                    name="amount"
-                    step="0.01"
-                    class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                    placeholder="Enter amount"
-                    required>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-black">M-Pesa Phone Number</label>
-                <input
-                    type="text"
-                    name="phone_number"
-                    class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                    placeholder="e.g. 254712345678"
-                    required>
-            </div>
-            <div>
-                <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Withdraw</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{% endblock %}
-
+          </div>
+        `);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,11 +1,15 @@
-<h2>Make a Payment</h2>
-<form method="post">
-  {% csrf_token %}
-  <label for="id_merchant_email">Merchant Email:</label>
-  <input type="email" name="merchant_email" id="id_merchant_email" required><br><br>
-
-  <label for="id_amount">Amount:</label>
-  <input type="number" name="amount" id="id_amount" step="0.01" required><br><br>
-
-  <button type="submit">Pay</button>
-</form>
+<h2 class="text-lg font-semibold mb-4">Pay Merchant</h2>
+      <form method="post" action="{% url 'payment:pay_merchant' %}" hx-post="{% url 'payment:pay_merchant' %}" hx-target="#transaction-list" hx-swap="innerHTML" class="space-y-3">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm font-medium text-black">Merchant Email</label>
+          <input type="email" name="merchant_email" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter merchant email" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-black">Amount</label>
+          <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount" required>
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Pay</button>
+        </div>
+      </form>

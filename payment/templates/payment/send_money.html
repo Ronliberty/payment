@@ -1,0 +1,15 @@
+<h2 class="text-lg font-semibold mb-4">Send Money</h2>
+              <form class="space-y-3" hx-post="{% url 'payment:send_money' %}" hx-target="#transaction-list" hx-swap="innerHTML">
+                {% csrf_token %}
+                <div>
+                  <label class="block text-sm font-medium text-black">Recipient Email</label>
+                  <input type="email" name="recipient_email" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter email" required>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-black">Amount</label>
+                  <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount" required>
+                </div>
+                <div>
+                  <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send</button>
+                </div>
+              </form>
