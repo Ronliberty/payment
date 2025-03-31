@@ -18,6 +18,12 @@ class MerchantDashboard(BaseDashboardView):
     template_name = 'dashboard/manger_dash.html'
     group_name = 'merchants'
 
+
+class ManagerDashboard(BaseDashboardView):
+    template_name = 'dashboard/manager_dash.html'
+    group_name = 'manager'
+
+
 class UserDashboardView(BaseDashboardView):
     template_name = 'dashboard/user_dash.html'
     group_name = 'default'

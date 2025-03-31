@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -66,11 +67,7 @@
         </div>
         <nav class="hidden md:flex items-center space-x-6">
           <a href="{% url 'dashboard:user_dashboard' %}" class="hover:text-gray-600">Dashboard</a>
-          <a href="#" id="transactions-link" class="hover:text-gray-600">Transactions</a>
-          <a href="#" id="pay-merchant-btn" class="hover:text-gray-600">Pay</a>
-          <a href="{% url 'payment:deposit' %}" class="hover:text-gray-600">Deposit</a>
-          <a href="{% url 'payment:withdraw' %}" class="hover:text-gray-600">Withdraw</a>
-          <a href="{% url 'payment:send_money' %}" class="hover:text-gray-600">Send Money</a>
+
         </nav>
         <div class="flex items-center space-x-4">
           <div class="relative">
@@ -80,8 +77,7 @@
             </button>
             <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
               <ul class="py-2">
-                <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Profile</a></li>
-                <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Settings</a></li>
+
                 <li><a href="{% url 'logout' %}" class="block px-4 py-2 text-black hover:bg-gray-100">Logout</a></li>
               </ul>
             </div>
@@ -104,6 +100,7 @@
             <div class="mt-4">
               <button id="add-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Add Funds</button>
               <button id="withdraw-funds-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 ml-2">Withdraw</button>
+              <button id="pay-merchant-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100 ml-2">Pay</button>
             </div>
           </div>
         </div>
@@ -136,6 +133,21 @@
           <div class="mt-8">
             <button id="send-money-btn" class="bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send Money</button>
             <div id="send-money-form" class="hidden card mt-4 p-4 w-full max-w-sm">
+                <h2 class="text-lg font-semibold mb-4">Send Money</h2>
+              <form class="space-y-3" hx-post="{% url 'payment:send_money' %}" hx-target="#transaction-list" hx-swap="innerHTML">
+                {% csrf_token %}
+                <div>
+                  <label class="block text-sm font-medium text-black">Recipient Email</label>
+                  <input type="email" name="recipient_email" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter email" required>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-black">Amount</label>
+                  <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount" required>
+                </div>
+                <div>
+                  <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Send</button>
+                </div>
+              </form>
 
             </div>
           </div>
@@ -149,6 +161,29 @@
   <div id="add-funds-modal" class="hidden modal-overlay">
     <div class="modal-container">
       <button class="close-modal">&times;</button>
+      <h2 class="text-lg font-semibold mb-4">Add Funds</h2>
+      <form method="post" action="{% url 'payment:deposit' %}" hx-post="{% url 'payment:deposit' %}" hx-target="#transaction-list" hx-swap="innerHTML" class="space-y-3">
+        {% csrf_token %}
+        {% if deposit_form.non_field_errors %}
+          <div class="mb-4 p-4 bg-red-50 text-red-700 rounded">
+            {{ deposit_form.non_field_errors }}
+          </div>
+        {% endif %}
+        <div>
+          <label class="block text-sm font-medium text-black">Amount</label>
+          <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount" required id="id_amount" value="{{ deposit_form.amount.value|default:'' }}">
+          {% for error in deposit_form.amount.errors %}
+            <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+          {% endfor %}
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-black">Mpesa Phone Number</label>
+          <input type="text" name="phone_number" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter Mpesa number" required>
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Add Funds</button>
+        </div>
+      </form>
 
     </div>
   </div>
@@ -157,17 +192,46 @@
   <div id="withdraw-funds-modal" class="hidden modal-overlay">
     <div class="modal-container">
       <button class="close-modal">&times;</button>
+       <h2 class="text-lg font-semibold mb-4">Withdraw Funds</h2>
+      <form method="post" action="{% url 'payment:withdraw' %}" hx-post="{% url 'payment:withdraw' %}" hx-target="#transaction-list" hx-swap="innerHTML" class="space-y-3">
+        {% csrf_token %}
+        <div>
+          <label class="block text-sm font-medium text-black">Amount</label>
+          <input type="number" name="amount" step="0.01" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="Enter amount" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-black">M-Pesa Phone Number</label>
+          <input type="text" name="phone_number" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" placeholder="e.g. 254712345678" required>
+        </div>
+        <div>
+          <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Withdraw</button>
+        </div>
+      </form>
 
     </div>
   </div>
 
-  <!-- Pay Merchant Modal -->
-  <div id="pay-merchant-modal" class="hidden modal-overlay">
+
+<div id="pay-merchant-modal" class="hidden modal-overlay">
     <div class="modal-container">
-      <button class="close-modal">&times;</button>
-
+        <button class="close-modal">&times;</button>
+        <h2 class="text-lg font-semibold mb-4">Pay Merchant</h2>
+        <form method="post" action="{% url 'payment:pay_merchant' %}" hx-post="{% url 'payment:pay_merchant' %}" hx-target="#transaction-list" hx-swap="innerHTML" class="space-y-3">
+            {% csrf_token %}
+            <div>
+                <label class="block text-sm font-medium text-black">Merchant Email</label>
+                <input type="email" name="merchant_email" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-black">Amount</label>
+                <input type="number" name="amount" class="mt-1 block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black" required>
+            </div>
+            <div>
+                <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Pay</button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 
   <!-- Footer -->
   <footer class="bg-white text-black py-6 mt-8 border-t">
@@ -180,54 +244,60 @@
     </div>
   </footer>
 
-  <script>
-    $(document).ready(function() {
-      // Profile Dropdown
-      $('#profile-dropdown').click(function(e) {
-        e.stopPropagation();
-        $('#dropdown-menu').toggleClass('hidden');
-      });
-      $(document).click(function() {
-        $('#dropdown-menu').addClass('hidden');
-      });
+ <script>
+  $(document).ready(function() {
+    // Profile Dropdown
+    $('#profile-dropdown').click(function(e) {
+      e.stopPropagation();
+      $('#dropdown-menu').toggleClass('hidden');
+    });
+    $(document).click(function() {
+      $('#dropdown-menu').addClass('hidden');
+    });
 
-      // Toggle Send Money Form
-      $('#send-money-btn').click(function() {
-        $('#send-money-form').toggleClass('hidden');
-      });
+    // Toggle Send Money Form
+    $('#send-money-btn').click(function() {
+      $('#send-money-form').toggleClass('hidden');
+    });
 
-      // Toggle modals
-      $('#add-funds-btn').click(() => $('#add-funds-modal').removeClass('hidden'));
-      $('#withdraw-funds-btn').click(() => $('#withdraw-funds-modal').removeClass('hidden'));
-      $('#pay-merchant-btn').click(() => $('#pay-merchant-modal').removeClass('hidden'));
+    // Toggle modals
+    $('#add-funds-btn').click(() => $('#add-funds-modal').removeClass('hidden'));
+    $('#withdraw-funds-btn').click(() => $('#withdraw-funds-modal').removeClass('hidden'));
 
-      // Close modals
-      $('.close-modal').click(() => $('.modal-overlay').addClass('hidden'));
+    // Pay Merchant Button - fixed to handle both buttons
+    $('[id="pay-merchant-btn"]').click(function() {
+      $('#pay-merchant-modal').removeClass('hidden');
+    });
 
-      // Transactions link demo (optional)
-      $('#transactions-link').click(function(e) {
-        e.preventDefault();
-        $('#main-content').html(`
-          <div class="card">
-            <h2 class="text-lg font-semibold mb-4">All Transactions</h2>
-            <div class="space-y-4">
-              <div class="transaction-item p-4 rounded-lg">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center">
-                    <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
-                    <div>
-                      <div class="font-semibold">Payment to Brian Kamau</div>
-                      <div class="text-sm text-gray-600">March 15, 2023</div>
-                    </div>
+    // Close Modal (single implementation)
+    $('.close-modal').click(function() {
+      $(this).closest('.modal-overlay').addClass('hidden');
+    });
+
+    // Transactions link demo (optional)
+    $('#transactions-link').click(function(e) {
+      e.preventDefault();
+      $('#main-content').html(`
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-4">All Transactions</h2>
+          <div class="space-y-4">
+            <div class="transaction-item p-4 rounded-lg">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <img class="h-8 w-8 rounded-full mr-3" src="https://img.icons8.com/doodle/96/null/user-male-circle.png" alt="User Avatar">
+                  <div>
+                    <div class="font-semibold">Payment to Brian Kamau</div>
+                    <div class="text-sm text-gray-600">March 15, 2023</div>
                   </div>
-                  <div class="font-semibold">-$250.00</div>
                 </div>
+                <div class="font-semibold">-$250.00</div>
               </div>
             </div>
           </div>
-        `);
-      });
+        </div>
+      `);
     });
-  </script>
+  });
+</script>
 </body>
 </html>

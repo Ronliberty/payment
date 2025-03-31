@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Dashboard</title>
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 h-full" x-data="{
+    sidebarOpen: window.innerWidth >= 768,
+    profileOpen: false,
+    messagesOpen: false,
+    darkMode: localStorage.getItem('darkMode') === 'true',
+    footerMenuOpen: false,
+    tickets: [
+        { id: 1, customer: 'Sarah Johnson', status: 'open', priority: 'high', lastUpdated: '2h ago' },
+        { id: 2, customer: 'Mike Chen', status: 'pending', priority: 'medium', lastUpdated: '4h ago' },
+        { id: 3, customer: 'Emma Wilson', status: 'closed', priority: 'low', lastUpdated: '1d ago' }
+    ],
+    messages: [
+        { sender: 'Support Team', content: 'System update scheduled', time: '10m ago' },
+        { sender: 'John Doe', content: 'Urgent: Payment issue', time: '45m ago' }
+    ],
+    init() {
+        if(this.darkMode) document.documentElement.classList.add('dark');
+        window.addEventListener('resize', () => this.sidebarOpen = window.innerWidth >= 768);
+        this.$watch('darkMode', value => {
+            localStorage.setItem('darkMode', value);
+            document.documentElement.classList.toggle('dark', value);
+        });
+    }
+}">
+    <div class="min-h-full flex">
+        <!-- Mobile Backdrop -->
+        <div x-show="sidebarOpen && window.innerWidth < 768" @click="sidebarOpen = false"
+             class="fixed inset-0 z-20 bg-black/50"></div>
+
+        <!-- Sidebar -->
+        <aside class="fixed inset-y-0 left-0 z-30 bg-white dark:bg-slate-800 shadow-lg transform transition-all duration-300 ease-in-out md:relative"
+               :class="sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full md:translate-x-0 md:w-20'">
+            <div class="p-4 overflow-y-auto h-full">
+                <!-- Sidebar Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3" :class="!sidebarOpen && 'hidden'">
+                        <img src="https://via.placeholder.com/40" alt="User avatar"
+                             class="w-10 h-10 rounded-full cursor-pointer border-2 border-emerald-500"
+                             @click="profileOpen = !profileOpen">
+                        <div>
+                            <h3 class="font-semibold dark:text-white">Alex Rivera</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Support Agent</p>
+                        </div>
+                    </div>
+                    <button @click="sidebarOpen = !sidebarOpen"
+                            class="absolute -right-3 top-4 bg-white dark:bg-slate-800 p-2 rounded-full shadow-md border border-gray-200 dark:border-slate-700">
+                        <i class='bx text-xl dark:text-white'
+                           :class="sidebarOpen ? 'bx-chevron-left' : 'bx-chevron-right'"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300"
+                       :class="sidebarOpen || 'justify-center'">
+                        <i class='bx bx-chat text-xl'></i>
+                        <span x-show="sidebarOpen">Tickets</span>
+                        <span x-show="sidebarOpen" class="ml-auto bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs">15</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300"
+                       :class="sidebarOpen || 'justify-center'">
+                        <i class='bx bx-group text-xl'></i>
+                        <span x-show="sidebarOpen">Customers</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300"
+                       :class="sidebarOpen || 'justify-center'">
+                        <i class='bx bx-book-open text-xl'></i>
+                        <span x-show="sidebarOpen">Knowledge Base</span>
+                    </a>
+                    <div class="pt-6 border-t border-gray-200 dark:border-slate-700">
+                        <a href="#" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300"
+                           :class="sidebarOpen || 'justify-center'">
+                            <i class='bx bx-line-chart text-xl'></i>
+                            <span x-show="sidebarOpen">Analytics</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 pb-20 md:pb-0 transition-all duration-300"
+              :class="sidebarOpen ? 'md:ml-64' : 'md:ml-20'">
+            <!-- Header -->
+            <header class="bg-white dark:bg-slate-800 shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden">
+                        <i class='bx bx-menu text-2xl dark:text-white'></i>
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <button @click="darkMode = !darkMode"
+                            class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full">
+                        <i class='bx text-xl dark:text-white' :class="darkMode ? 'bx-sun' : 'bx-moon'"></i>
+                    </button>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Messages Dropdown -->
+                        <div class="relative">
+                            <button @click="messagesOpen = !messagesOpen"
+                                    class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full relative">
+                                <i class='bx bx-message-dots text-xl dark:text-white'></i>
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-white px-2 py-1 rounded-full text-xs">3</span>
+                            </button>
+                            <div x-show="messagesOpen" @click.away="messagesOpen = false"
+                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-2 z-50">
+                                <template x-for="message in messages" :key="message.time">
+                                    <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+                                        <div class="font-medium" x-text="message.sender"></div>
+                                        <div class="text-xs text-gray-500" x-text="message.content"></div>
+                                        <div class="text-xs text-gray-400 mt-1" x-text="message.time"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Profile Dropdown -->
+                        <div class="relative">
+                            <img src="https://via.placeholder.com/40" alt="User avatar"
+                                 class="w-8 h-8 rounded-full cursor-pointer border-2 border-emerald-500"
+                                 @click="profileOpen = !profileOpen">
+                            <div x-show="profileOpen" @click.away="profileOpen = false"
+                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-md shadow-lg py-1 z-50">
+                                <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+                                    <i class='bx bx-user mr-3'></i> Profile
+                                </a>
+                                <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+                                    <i class='bx bx-cog mr-3'></i> Settings
+                                </a>
+                                <a href="{% url 'logout' %}" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+                                    <i class='bx bx-log-out mr-3'></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-6 py-4">
+                    <div class="bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-blue-600 dark:text-blue-300">Open Tickets</p>
+                                <p class="text-2xl font-bold dark:text-white">15</p>
+                            </div>
+                            <i class='bx bx-chat text-3xl text-blue-600 dark:text-blue-300'></i>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 dark:bg-slate-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-green-600 dark:text-green-300">Solved Today</p>
+                                <p class="text-2xl font-bold dark:text-white">32</p>
+                            </div>
+                            <i class='bx bx-check-circle text-3xl text-green-600 dark:text-green-300'></i>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 dark:bg-slate-700 p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-purple-600 dark:text-purple-300">Satisfaction Rate</p>
+                                <p class="text-2xl font-bold dark:text-white">94%</p>
+                            </div>
+                            <i class='bx bx-happy text-3xl text-purple-600 dark:text-purple-300'></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            {% block content %}
+            {% endblock %}
+
+            <!-- Content Area -->
+            <div class="p-6">
+                <!-- Tickets Table -->
+                <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold dark:text-white">Recent Tickets</h2>
+                        <button class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center">
+                            <i class='bx bx-plus mr-2'></i> New Ticket
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="text-sm text-gray-500 dark:text-gray-400 border-b dark:border-slate-700">
+                                <tr>
+                                    <th class="pb-3 text-left">Customer</th>
+                                    <th class="pb-3 text-left">Status</th>
+                                    <th class="pb-3 text-left">Priority</th>
+                                    <th class="pb-3 text-left">Last Updated</th>
+                                    <th class="pb-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm dark:text-gray-300">
+                                <template x-for="ticket in tickets" :key="ticket.id">
+                                    <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
+                                        <td class="py-4" x-text="ticket.customer"></td>
+                                        <td>
+                                            <span class="px-2 py-1 rounded-full text-xs font-medium"
+                                                  :class="{
+                                                    'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300': ticket.status === 'open',
+                                                    'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300': ticket.status === 'pending',
+                                                    'bg-gray-100 dark:bg-gray-900/20 text-gray-800 dark:text-gray-300': ticket.status === 'closed'
+                                                  }"
+                                                  x-text="ticket.status"></span>
+                                        </td>
+                                        <td x-text="ticket.priority"></td>
+                                        <td x-text="ticket.lastUpdated"></td>
+                                        <td class="text-right">
+                                            <i class='bx bx-chevron-right text-gray-400'></i>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Footer -->
+            <footer class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 shadow-t-lg md:hidden z-40">
+                <nav class="flex justify-center items-center py-3 relative h-16">
+                    <button @click="footerMenuOpen = !footerMenuOpen"
+                            class="p-2 bg-emerald-500 text-white rounded-full shadow-lg transform transition-all duration-300
+                                   hover:bg-emerald-600 hover:scale-110 z-50">
+                        <i class='bx bx-menu text-xl' :class="footerMenuOpen && 'bx-x'"></i>
+                    </button>
+
+                    <div class="absolute inset-0 flex justify-around items-center pointer-events-none px-4">
+                        <a href="#" class="flex flex-col items-center text-gray-600 dark:text-gray-300 transform transition-all duration-300
+                                      opacity-0 translate-y-8"
+                           :class="footerMenuOpen ?
+                                  'opacity-100 translate-y-0 delay-100 pointer-events-auto' :
+                                  'opacity-0 translate-y-8'">
+                            <i class='bx bx-chat text-xl'></i>
+                            <span class="text-xs mt-1">Tickets</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center text-gray-600 dark:text-gray-300 transform transition-all duration-300
+                                      opacity-0 translate-y-8"
+                           :class="footerMenuOpen ?
+                                  'opacity-100 translate-y-0 delay-200 pointer-events-auto' :
+                                  'opacity-0 translate-y-8'">
+                            <i class='bx bx-search text-xl'></i>
+                            <span class="text-xs mt-1">Search</span>
+                        </a>
+                        <a href="#" class="flex flex-col items-center text-gray-600 dark:text-gray-300 transform transition-all duration-300
+                                      opacity-0 translate-y-8"
+                           :class="footerMenuOpen ?
+                                  'opacity-100 translate-y-0 delay-300 pointer-events-auto' :
+                                  'opacity-0 translate-y-8'">
+                            <i class='bx bx-user text-xl'></i>
+                            <span class="text-xs mt-1">Profile</span>
+                        </a>
+                    </div>
+                </nav>
+            </footer>
+        </main>
+    </div>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .bx { vertical-align: middle; }
+        .rotate-180 { transform: rotate(180deg); }
+        body { transition: background-color 0.3s ease; }
+    </style>
+</body>
+</html>

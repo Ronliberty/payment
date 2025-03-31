@@ -55,7 +55,7 @@
         }
     </style>
 </head>
-<body class="bg-white flex flex-col min-h-screen">
+<body class="bg-white flex flex-col min-h-screen" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
 <header class="bg-white text-black py-4 border-b">
     <div class="container mx-auto px-4">
@@ -66,13 +66,6 @@
             </div>
             <nav class="hidden md:flex items-center space-x-6">
                 <a href="{% url 'dashboard:user_dashboard' %}" class="hover:text-gray-600">Dashboard</a>
-                <a href="" id="transactions-link" class="hover:text-gray-600">Transactions</a>
-                <a href="{% url 'payment:pay_merchant' %}"  class="hover:text-gray-600">Pay</a>
-                <a href="{% url 'payment:deposit' %}" class="hover:text-gray-600">deposit</a>
-                <a href="{% url 'payment:withdraw' %}"  class="hover:text-gray-600">withdraw</a>
-                <a href="{% url 'payment:send_money' %}" class="hover:text-gray-600">send_money</a>
-                <a href="{% url 'payment:verify_otp' %}" class="hover:text-gray-600">Transactions</a>
-
             </nav>
             <div class="flex items-center space-x-4">
                 <div class="relative">
@@ -82,8 +75,6 @@
                     </button>
                     <div id="dropdown-menu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
                         <ul class="py-2">
-                            <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Profile</a></li>
-                            <li><a href="#" class="block px-4 py-2 text-black hover:bg-gray-100">Settings</a></li>
                             <li><a href="{% url 'logout' %}" class="block px-4 py-2 text-black hover:bg-gray-100">Logout</a></li>
                         </ul>
                     </div>
@@ -93,12 +84,9 @@
     </div>
 </header>
 
-<main >
+<main>
     {% block content %}
-
-
     {% endblock %}
-
 </main>
 
 <script>
@@ -146,6 +134,43 @@
         $('#add-funds-btn').click(() => $('#add-funds-modal').removeClass('hidden'));
         $('#withdraw-funds-btn').click(() => $('#withdraw-funds-modal').removeClass('hidden'));
         $('.close-modal').click(() => $('.modal-overlay').addClass('hidden'));
+    });
+
+    // HTMX event handlers for form submission
+    document.addEventListener('htmx:beforeRequest', function(evt) {
+        // Show loading state if needed
+    });
+
+    document.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.successful) {
+            // Close all modals
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.add('hidden');
+            });
+
+            // Force full page refresh
+            window.location.reload();
+        }
+    });
+
+    // Alternative for forms not using HTMX
+    $(document).on('submit', 'form:not([hx-post]):not([hx-get])', function(e) {
+        e.preventDefault();
+        var form = $(this);
+
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function() {
+                $('.modal-overlay').addClass('hidden');
+                window.location.reload();
+            },
+            error: function(xhr) {
+                // Handle errors if needed
+                console.error(xhr.responseText);
+            }
+        });
     });
 </script>
 

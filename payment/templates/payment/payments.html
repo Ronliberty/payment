@@ -1,0 +1,42 @@
+{% extends 'dashboard/best.html' %}
+{% block content %}
+<div class="p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold dark:text-white">Payments Received</h2>
+            <a href="{% url 'payment:export_merchant_payments_csv' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class='bx bx-download mr-2'></i> Print Report
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="text-sm text-gray-500 dark:text-gray-400 border-b dark:border-slate-700">
+                    <tr>
+                        <th class="pb-3 text-left">Sender</th>
+                        <th class="pb-3 text-left">Amount</th>
+                        <th class="pb-3 text-left">Status</th>
+                        <th class="pb-3 text-left">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm dark:text-gray-300">
+                    {% for transaction in transactions %}
+                        <tr class="border-b dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer">
+                            <td class="py-4">{{ transaction.sender.email|default:"Anonymous" }}</td>
+                            <td>Ksh{{ transaction.amount }}</td>
+                            <td class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300">
+                                {{ transaction.status }}
+                            </td>
+                            <td>{{ transaction.timestamp }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4">No payments received.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

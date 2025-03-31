@@ -7,7 +7,7 @@ from django.db import transaction as db_transaction
 class Wallet(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
-    currency = models.CharField(max_length=10, default="USD")
+    currency = models.CharField(max_length=10, default="ksh")
 
     def __str__(self):
         return f"{self.user.username} - {self.balance} {self.currency}"

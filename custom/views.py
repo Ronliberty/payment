@@ -23,8 +23,8 @@ class RedirectAfterLoginView(LoginRequiredMixin, View):
         group_redirects = {
             'default': 'dashboard:user_dashboard',
             'manager': 'dashboard:manager-dashboard',
-            'writer': 'dashboard:Writer-dashboard',
-            'moderator': 'dashboard:mod-dash',
+            'merchants': 'dashboard:machant-dashboard',
+
         }
 
         # Get user groups
@@ -35,9 +35,7 @@ class RedirectAfterLoginView(LoginRequiredMixin, View):
             if group in user_groups:
                 return redirect(url)
 
-        # Check if user is a superuser
-        if user.is_superuser:
-            return redirect('dashboard:super-dash')
+
 
         # Fallback
         return redirect('base:index')

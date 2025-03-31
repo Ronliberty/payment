@@ -1,6 +1,7 @@
+import csv
 from PIL.ImagePalette import random
 from django.db import transaction as db_transaction
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Wallet, Transaction
@@ -8,6 +9,7 @@ from .forms import DepositForm, SendForm, WithdrawForm, PaymentRequestForm
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.views.generic.edit import FormView
+from django.http import HttpResponse
 
 from django.urls import reverse_lazy
 
@@ -206,3 +208,100 @@ class VerifyOTPView(LoginRequiredMixin, View):
         messages.error(request, 'Invalid otp. Try again')
         return self.form_invalid(request)
 
+
+class MerchantPaymentsView(LoginRequiredMixin, ListView):
+    model = Transaction
+    template_name = 'payment/payments.html'
+    context_object_name = 'transactions'
+
+
+    def get_queryset(self):
+        """
+        Fetch only completed payment requests where the logged-in user is the receiver (merchant).
+        """
+        return Transaction.objects.filter(
+            receiver=self.request.user,
+            transaction_type='payment_request',
+            status='completed'
+        ).order_by('-timestamp')
+
+def export_merchant_payments_csv(request):
+    """
+    Generate a CSV report of payments received by the merchant.
+    """
+    transactions = Transaction.objects.filter(
+        receiver=request.user,
+        transaction_type='payment_request',
+        status='completed'
+    ).order_by('-timestamp')
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="merchant_payments.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Sender', 'Amount', 'Status', 'Date'])
+
+    for transaction in transactions:
+        writer.writerow([
+            transaction.sender.email if transaction.sender else 'Anonymous',
+            transaction.amount,
+            transaction.status,
+            transaction.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        ])
+
+    return response
+
+
+class MerchantWithdrawView(LoginRequiredMixin, CreateView):
+    model = Transaction
+    template_name = 'payment/merchant_withdraw.html'  # Create this template
+    form_class = WithdrawForm
+    success_url = reverse_lazy('dashboard:machant-dashboard')  # Update with the correct URL
+
+    def form_valid(self, form):
+        merchant = self.request.user
+        phone_number = form.cleaned_data['phone_number']
+        amount = form.cleaned_data['amount']
+
+        # Ensure the amount is Decimal
+        amount = Decimal(amount)
+
+        # Check if the user is a merchant
+        if not merchant.groups.filter(name='merchants').exists():
+            messages.error(self.request, "Unauthorized access.")
+            return self.form_invalid(form)
+
+        # Get the merchant's wallet
+        wallet, _ = Wallet.objects.get_or_create(user=merchant)
+
+        # Check balance
+        if wallet.balance < amount:
+            messages.error(self.request, "Insufficient balance.")
+            return self.form_invalid(form)
+
+        with db_transaction.atomic():
+            # Deduct the amount from the wallet
+            wallet.balance -= amount
+            wallet.save()
+
+            # Create withdrawal transaction
+            Transaction.objects.create(
+                sender=merchant,
+                receiver=None,  # No receiver for withdrawal
+                amount=amount,
+                transaction_type='withdrawal',  # Ensure correct transaction type
+                phone_number=phone_number,
+                status='pending'  # Mark as pending for further processing
+            )
+
+        messages.success(self.request, "Withdrawal request submitted successfully.")
+        return super().form_valid(form)
+
+
+
+def wallet_balance_processor(request):
+    """Make wallet balance available in all templates."""
+    if request.user.is_authenticated:
+        wallet, created = Wallet.objects.get_or_create(user=request.user)
+        return {'wallet_balance': wallet.balance}
+    return {'wallet_balance': 0}

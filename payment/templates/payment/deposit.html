@@ -1,3 +1,4 @@
+
 <h2 class="text-lg font-semibold mb-4">Add Funds</h2>
       <form method="post" action="{% url 'payment:deposit' %}" hx-post="{% url 'payment:deposit' %}" hx-target="#transaction-list" hx-swap="innerHTML" class="space-y-3">
         {% csrf_token %}
@@ -21,3 +22,5 @@
           <button type="submit" class="w-full bg-white text-black border border-black px-4 py-2 rounded-lg hover:bg-gray-100">Add Funds</button>
         </div>
       </form>
+
+

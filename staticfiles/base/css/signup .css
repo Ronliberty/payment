@@ -1,0 +1,64 @@
+/* ============================
+   Signup Page Custom Styling
+============================= */
+body {
+    background-color: #f8f9fa; /* Light background */
+    font-family: "Arial", sans-serif;
+}
+
+/* Centering the form */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Form Fields */
+input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Buttons */
+.btn-lg {
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.btn-danger {
+    background-color: #db4437; /* Google Red */
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-danger:hover {
+    background-color: #c1351d;
+}
+
+.btn-dark {
+    background-color: #333; /* GitHub Dark */
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-dark:hover {
+    background-color: #222;
+}
+
+/* Social Login Buttons */
+.d-flex .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}

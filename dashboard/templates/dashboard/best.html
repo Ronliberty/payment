@@ -1,134 +1,345 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bms_Bmp</title>
-    <link rel="stylesheet" href="{% static 'dashboard/css/dashboard.css' %}" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+    <title>{% block title %}Merchant Dashboard{% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="https://img.icons8.com/small/64/000000/money-bag.png"/>
 
-
+    {% block head_styles %}
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    {% block extra_css %}{% endblock %}
+    <style>
+        .bx { vertical-align: middle; }
+        .rotate-180 { transform: rotate(180deg); }
+        body { transition: background-color 0.3s ease; }
+
+        /* Sidebar transitions */
+        .sidebar {
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        /* Mobile backdrop */
+        .mobile-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Dropdown menus */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            margin-top: 0.5rem;
+            width: 12rem;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            z-index: 50;
+        }
+
+        .dark .dropdown-menu {
+            background-color: #1e293b; /* slate-800 */
+        }
+
+        /* Mobile footer menu items */
+        .footer-menu-item {
+            opacity: 0;
+            transform: translateY(2rem);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer-menu-open .footer-menu-item {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .footer-menu-item:nth-child(1) {
+            transition-delay: 100ms;
+        }
+
+        .footer-menu-item:nth-child(2) {
+            transition-delay: 200ms;
+        }
+
+        /* Hide elements that should be hidden when sidebar is collapsed */
+        .sidebar-collapsed .sidebar-link-text,
+        .sidebar-collapsed .sidebar-header-content {
+            display: none !important;
+        }
+    </style>
+    {% endblock %}
+
+    {% block head_scripts %}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://unpkg.com/htmx.org@1.8.4"></script>
+    {% endblock %}
 </head>
-<body>
-   <header class="header">
-    <div class="left-section">
-        <div class="hamburger-menu">
-            <i class='bx bx-menu'></i>
-        </div>
+<body class="bg-gray-50 dark:bg-slate-900 h-full">
+    <div class="min-h-full flex">
+        <!-- Mobile Backdrop -->
+        <div id="mobileBackdrop" class="mobile-backdrop"></div>
 
-    </div>
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-30 bg-white dark:bg-slate-800 shadow-lg w-64 md:relative md:translate-x-0 md:w-20">
+            <div class="p-4 overflow-y-auto h-full">
+                <!-- Sidebar Header -->
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center space-x-3 sidebar-header-content">
+                        <img src="https://via.placeholder.com/40" alt="User avatar"
+                             class="w-10 h-10 rounded-full cursor-pointer border-2 border-emerald-500"
+                             id="profileImage">
+                        <div>
+                            <h3 class="font-semibold dark:text-white">{{ request.user.get_full_name|default:request.user.username }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Merchant</p>
+                        </div>
+                    </div>
+                    <button id="sidebarToggle"
+                            class="absolute -right-3 top-4 bg-white dark:bg-slate-800 p-2 rounded-full shadow-md border border-gray-200 dark:border-slate-700">
+                        <i class='bx bx-chevron-left text-xl dark:text-white'></i>
+                    </button>
+                </div>
 
-
-            <div class="right-section" style=" text-decoration: none; color: #000000;">
-            <div class="icon-settings" style=" text-decoration: none; color: #000000;">
-
-                    <a href="" class="user" style=" text-decoration: none; color: #000000;">
-                        <i class='bx bx-user' ></i>
+                <!-- Navigation Menu -->
+                <nav class="space-y-2">
+                    <a href="{% url 'payment:merchant_payments' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 sidebar-link">
+                        <i class='bx bx-money text-xl'></i>
+                        <span class="sidebar-link-text">Payments</span>
+                    </a>
+                    <a href="{% url 'payment:merchant_withdraw' %}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-300 sidebar-link">
+                        <i class='bx bx-transfer text-xl'></i>
+                        <span class="sidebar-link-text">Withdraw Funds</span>
                     </a>
 
-                    <a href="" class="chart" style=" text-decoration: none; color: #000000">
-                        <i class='bx bxs-comment-dots'>
-
-                    </i></a>
-                    <a href="" class="home-link" style=" text-decoration: none; color: #000000"><i class='bx bx-bell'></i></a>
-
-
-
-                   <a href="" class="settings" style=" text-decoration: none; color: #000000">
-                    <i class="bx bx-cog"></i>
-                </a>
-
+                    {% block sidebar_extra_links %}{% endblock %}
+                </nav>
             </div>
+        </aside>
 
+        <!-- Main Content -->
+        <main id="mainContent" class="flex-1 pb-20 md:pb-0 transition-all duration-300 md:ml-20">
+            <!-- Header -->
+            <header class="bg-white dark:bg-slate-800 shadow-sm">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <button id="mobileSidebarToggle" class="md:hidden">
+                        <i class='bx bx-menu text-2xl dark:text-white'></i>
+                    </button>
 
-    </div>
-    <nav class="sidebar">
-        <div class="nav-li">
-            <nav>
+                    <!-- Theme Toggle -->
+                    <button id="themeToggle"
+                            class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-full">
+                        <i class='bx bx-moon text-xl dark:text-white'></i>
+                    </button>
 
-                <li class="li"><a href="">All Transactions</a></li>
-                <li class="li"><a href="">History</a></li>
+                      <div class="flex items-center space-x-4">
+            <!-- Profile Dropdown -->
+            <div class="relative">
+                <img src="https://via.placeholder.com/40" alt="User avatar"
+                     class="w-8 h-8 rounded-full cursor-pointer border-2 border-emerald-500"
+                     id="profileToggle">
+                <div id="profileDropdown" class="dropdown-menu">
+                    <a href="{% url 'logout' %}"
+                       class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+                        <i class='bx bx-log-out mr-3'></i> Logout
+                    </a>
+                </div>
+                        </div>
+                    </div>
+                </div>
 
+                {% block header_content %}
+                <!-- Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-6 py-4">
+                    <div class="bg-blue-50 dark:bg-slate-700 p-4 rounded-lg">
+                        <div class="p-4 bg-gray-100 dark:bg-slate-700 rounded-lg z-50">
+                            <p class="text-sm text-blue-600 dark:text-blue-300">Wallet Balance</p>
+                            <p class="text-2xl font-bold dark:text-white">Ksh {{ wallet_balance }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endblock %}
+            </header>
+
+            <!-- Page Content -->
+            <div class="px-4 py-6 sm:px-6 lg:px-8">
+                {% block page_header %}
+                <div class="mb-6 flex justify-between items-center">
+
+                    {% block page_actions %}{% endblock %}
+                </div>
+                {% endblock %}
+
+                {% block messages %}
+                {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                    <div class="p-4 mb-4 text-sm rounded-lg {% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endblock %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Mobile Footer -->
+        <footer class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 shadow-t-lg md:hidden z-40">
+            <nav class="flex justify-center items-center py-3 relative h-16">
+                <button id="footerMenuToggle"
+                        class="p-2 bg-emerald-500 text-white rounded-full shadow-lg transform transition-all duration-300
+                               hover:bg-emerald-600 hover:scale-110 z-50">
+                    <i class='bx bx-menu text-xl'></i>
+                </button>
+
+                <div class="absolute inset-0 flex justify-around items-center pointer-events-none px-4">
+                    <a href="{% url 'payment:merchant_payments' %}" class="footer-menu-item flex flex-col items-center text-gray-600 dark:text-gray-300">
+                        <i class='bx bx-money text-xl'></i>
+                        <span class="text-xs mt-1">Payments</span>
+                    </a>
+                    <a href="{% url 'payment:merchant_withdraw' %}" class="footer-menu-item flex flex-col items-center text-gray-600 dark:text-gray-300">
+                        <i class='bx bx-transfer text-xl'></i>
+                        <span class="text-xs mt-1">Withdraw</span>
+                    </a>
+
+                    {% block footer_menu_extra_links %}{% endblock %}
+                </div>
             </nav>
-        </div>
-
-
-        <div class="dropdown">
-            <div class="dropdown-header">
-                <a href="#" class="dropdown-toggle">
-                    <span>Main Menu</span>
-                    <i class='bx bx-chevron-down'></i>
-                </a>
-            </div>
-            <div class="dropdown-content">
-                <div class="sidebar-link">
-                    <a href="" class="home-link" style="color: black;"><i class='bx bx-home'></i></a>
-                    <div><a href="" class="home-link" style="color: black;">Home</a></div>
-                </div>
-                <div class="sidebar-link">
-                    <a href="" class="home-link" style="color: black;"><i class='bx bxs-user'></i></a>
-                    <div><a href="" class="home-link" style="color: black;">Users</a></div>
-                </div>
-
-                <div class="sidebar-link">
-                    <a href="" class="home-link" style="color:black;"><i class='bx bx-history'></i></a>
-                    <div><a href="" class="home-link" style="color: black;">History</a></div>
-                </div>
-
-                <div class="sidebar-link">
-                    <a href="{% url 'logout' %}" class="home-link" style="color: black;"><i class='bx bx-help-circle'></i></a>
-                    <div><a href="{% url 'logout' %}" class="home-link" style="color: black;">logout</a></div>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-
-
-
-
-   </header>
-   <main>
-       <section class="container">
-       {% block content %}
-       {% endblock %}
-       </section>
-</main>
-   <footer class="footerbar">
-    <div >
-        <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-home' ></i></a>
-
-            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bxs-user' ></i></a>
-
-            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-male-female'></i></a>
-
-            <a href="" class="footlink" style="text-decoration: none;"><i class='bx bx-history'></i></a>
-
-
-
-
+        </footer>
     </div>
-   </footer>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const menuToggle = document.getElementById("menu-toggle");
-    const menu = document.querySelector(".sidebar"); // Targets the sidebar
+    {% block body_scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for dark mode preference
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeToggle').querySelector('i').className = 'bx bx-sun text-xl dark:text-white';
+            }
 
-    menuToggle.addEventListener("click", function () {
-        menu.classList.toggle("active"); // Toggles visibility
-    });
-});
-</script>
+            // Sidebar state
+            let sidebarOpen = window.innerWidth >= 768;
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const mobileBackdrop = document.getElementById('mobileBackdrop');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
 
+            // Dropdown menus
+            const profileToggle = document.getElementById('profileToggle');
+            const profileDropdown = document.getElementById('profileDropdown');
+            const messagesToggle = document.getElementById('messagesToggle');
+            const messagesDropdown = document.getElementById('messagesDropdown');
 
+            // Footer menu
+            const footerMenuToggle = document.getElementById('footerMenuToggle');
+            const footer = document.querySelector('footer');
 
+            // Theme toggle
+            const themeToggle = document.getElementById('themeToggle');
 
-<!--   <script src="{% static 'dashboard/js/dashboard.js' %}"></script>-->
+            // Toggle sidebar
+            function toggleSidebar() {
+                sidebarOpen = !sidebarOpen;
+                updateSidebar();
+            }
+
+            function updateSidebar() {
+                if (sidebarOpen) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    sidebar.classList.remove('md:w-20');
+                    sidebar.classList.add('w-64');
+                    mainContent.classList.remove('md:ml-20');
+                    mainContent.classList.add('md:ml-64');
+                    sidebarToggle.querySelector('i').className = 'bx bx-chevron-left text-xl dark:text-white';
+                    mobileBackdrop.style.display = window.innerWidth < 768 ? 'block' : 'none';
+
+                    // Show sidebar text
+                    document.querySelectorAll('.sidebar-link-text').forEach(el => el.style.display = 'inline');
+                    document.querySelector('.sidebar-header-content').style.display = 'flex';
+                    sidebar.classList.remove('sidebar-collapsed');
+                } else {
+                    sidebar.classList.remove('translate-x-0');
+                    sidebar.classList.add('-translate-x-full', 'md:translate-x-0');
+                    sidebar.classList.remove('w-64');
+                    sidebar.classList.add('md:w-20');
+                    mainContent.classList.remove('md:ml-64');
+                    mainContent.classList.add('md:ml-20');
+                    sidebarToggle.querySelector('i').className = 'bx bx-chevron-right text-xl dark:text-white';
+                    mobileBackdrop.style.display = 'none';
+
+                    // Hide sidebar text
+                    sidebar.classList.add('sidebar-collapsed');
+                }
+            }
+
+            // Initialize sidebar
+            updateSidebar();
+
+            // Event listeners
+            sidebarToggle.addEventListener('click', toggleSidebar);
+            mobileSidebarToggle.addEventListener('click', toggleSidebar);
+            mobileBackdrop.addEventListener('click', toggleSidebar);
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                sidebarOpen = window.innerWidth >= 768;
+                updateSidebar();
+            });
+
+            // Toggle dropdown menus
+            profileToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                messagesDropdown.style.display = 'none';
+                profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            messagesToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                profileDropdown.style.display = 'none';
+                messagesDropdown.style.display = messagesDropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function() {
+                profileDropdown.style.display = 'none';
+                messagesDropdown.style.display = 'none';
+            });
+
+            // Toggle footer menu
+            footerMenuToggle.addEventListener('click', function() {
+                footer.classList.toggle('footer-menu-open');
+                const icon = footerMenuToggle.querySelector('i');
+                if (footer.classList.contains('footer-menu-open')) {
+                    icon.className = 'bx bx-x text-xl';
+                } else {
+                    icon.className = 'bx bx-menu text-xl';
+                }
+            });
+
+            // Toggle dark mode
+            themeToggle.addEventListener('click', function() {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', isDark);
+                const icon = themeToggle.querySelector('i');
+                icon.className = isDark ? 'bx bx-sun text-xl dark:text-white' : 'bx bx-moon text-xl';
+            });
+        });
+    </script>
+    {% endblock %}
 </body>
 </html>
